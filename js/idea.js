@@ -38,11 +38,10 @@ const urls = [`https://chatgpt.com/?prompt=${encodeURIComponent(prompt)}`,
 
 // Crear un Map para cada tipo de boton, que la key sea chatGPT y el value = 0. El clickCOunts está en memoria RAM. El mapa está asociado a clickcount. TENEMOS QUE RECUPERAR EL CONTADOR! //para que se nos guarden los clicks en los botones de la ultima parte del codigo . If local storage existe te voy a hacer esto, si no existe  (else :) te creo un objeto con los contadores a 0
 const clickCounts = localStorage.getItem('Clics') ? JSON.parse(localStorage.getItem('Clics')) : {
-    chatGPT: 0,
+    chatgpt: 0,
     qwen: 0,
     claude: 0
 }
-
         
 document.addEventListener('click', (event) => {
     //copiar el prompt al portapapeles
@@ -74,3 +73,22 @@ document.addEventListener('click', (event) => {
     }
 })
 
+//Descargar un archivo .txt con Blob que contenga los contadores de clicks de cada boton - el string pasa a Blob y luego a una URL enganchada a Blob, creamos una a, un link
+function descargarClics() {
+    const contenido = `Clics en chatGPT: ${clickCounts.chatgpt}\nClics en Qwen: ${clickCounts.qwen}\nClics en Claude: ${clickCounts.claude}`
+    const blob = new Blob([contenido], { type: 'text/plain' }) //clase interna Blob que crea un archivo en memoria
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'clics.txt'
+    document.body.appendChild(link)
+    link.click() //simula el click en el link, porque la URL no existe, para poder descargar el archivo
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url) //liberar memoria de la URL en memoria que hemos creado
+}
+
+//Llamar a la funcion descargarClics al cerrar la pestaña o descargar la página
+window.addEventListener('beforeunload', descargarClics) //beforeunload es un evento que se dispara antes de que la pagina se descargue, llamar a la función descargarClics, tambien serviría load en vez de beforeunload
+
+//para que haya un boton para descargar clics
+//const todo = document.getElementById('todo').addEventListener('click', (descargarClics)
