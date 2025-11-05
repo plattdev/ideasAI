@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDEAS | Inicio</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="light-mode">
+
+    <!-- Dark Mode y Light Mode -->
+    <div class="mode-toggle">
+        <button id="dark-mode-btn">Dark Mode</button>
+        <button id="light-mode-btn">Light Mode</button>
+    </div>
+
+    <!-- Formulario para introducir idea y que la idea se vea en idea.html, otra manera de circular datos a traves de id. NAME=IDEA ES UNA VARIABLE QUE FUNCIONA CON EL ACTION IDEA.HTML. name="idea": is crucial - it becomes the parameter name in the URL. It acts as the contract between the form submission and the JS that retrieves the data on the destination page. In idea.html, the JS looks for this parameter name, const ideaId = urlParams.get('idea')   -->
+     <form id="form" action="idea.html" method="get">
+        <label for="idea-input">Introduce tu idea:</label>
+        <input type="text" id="idea-input" name="idea" required>
+        <button class="form__btn" id="formBtn" type="submit">Enviar Idea</button>
+     </form>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
+
