@@ -1,9 +1,10 @@
 //Mirar si hay algun dato en localStorage sobre el tema (modo claro/oscuro). EN CADA HTML HAY QUE PONER ESTE CODIGO PARA QUE FUNCIONE EL MODO OSCURO/CLARO
 const temaGuardado = localStorage.getItem('theme') //recuperamos el valor de la key: theme
 
-if (temaGuardado === 'dark') {
-    document.body.classList.add(temaGuardado)
-}   
+if (temaGuardado === "dark") {
+    document.body.classList.remove("light-mode");
+    document.body.classList.add("dark-mode");
+}
 
 //Una manera de enviar datos a traves de un form get -> pasar parametros en la URL -> recogerlos en la pagina destino ChatGPT
 
@@ -21,27 +22,55 @@ if (ideaId) {
 //Crear una constante con el prompt para la IA
 const prompt = `Genera una idea creativa y original para un proyecto, con el siguiente tema: ${ideaId}. Proporciona una descripción breve y concisa`
 
+// Cuando se haga clic en el botón chatgpt-btn, copiar en el portapapeles el prompt, y abrir una pestaña nueva con la URL de chatgpt
+
 //cuando le haga click en el boton chatgpt-btn, copiar en el portapapeles el prompt y abrir una nueva pestaña con la URL de chatgpt
 const chatgptBtn = document.getElementById('chatgpt-btn')
 const qwenBtn = document.getElementById('qwen-btn')
 const claudeBtn = document.getElementById('claude-btn')
 
-//crear la URL de chatgpt con el prompt como parametro - ? accede a una parte de la URL que retiene posibles variables que esten navegando a traves de la URL, al ser get podremos recuperarlas. Prompt es una variable que contiene el texto que queremos pasar. 
+//crear la URL de chatgpt con el prompt como parametro - accede a una parte de la URL que retiene posibles variables que esten navegando a traves de la URL, al ser get podremos recuperarlas. Prompt es una variable que contiene el texto que queremos pasar. 
 //encodeURIComponent sirve para codificar el texto y que no de errores en la URL, por ejemplo pasa %20 por un espacio en blanco
 const urls = [`https://chatgpt.com/?prompt=${encodeURIComponent(prompt)}`,  
         `https://chat.qwen.ai/?q=${encodeURIComponent(prompt)}`,
         `https://claude.ai/?prompt=${encodeURIComponent(prompt)}`]
+
+
+// Crear un Map para cada tipo de boton, que la key sea chatGPT y el value = 0. El clickCOunts está en memoria RAM. El mapa está asociado a clickcount. TENEMOS QUE RECUPERAR EL CONTADOR! //para que se nos guarden los clicks en los botones de la ultima parte del codigo . If local storage existe te voy a hacer esto, si no existe  (else :) te creo un objeto con los contadores a 0
+const clickCounts = localStorage.getItem('Clics') ? JSON.parse(localStorage.getItem('Clics')) : {
+    chatGPT: 0,
+    qwen: 0,
+    claude: 0
+}
+
         
 document.addEventListener('click', (event) => {
     //copiar el prompt al portapapeles
     navigator.clipboard.writeText(prompt)
-    
+
     if (chatgptBtn.contains(event.target)) {
-        window.open(urls[0], '_blank')
+        //window.open(urls[0], '_blank')
+        clickCounts.chatgpt++
+        //convertir a localStorage. 2 formas de hacerlo, la primera le parece mejor a TF, el segundo no se parece a un map, lo separa de uno en uno
+        localStorage.setItem('Clics', JSON.stringify(clickCounts))
+        //localStorage.setItem('Clics-chatgpt', clickCounts.chatgpt)
+
     } else if (qwenBtn.contains(event.target)) {
-        window.open(urls[1], '_blank')
+        //window.open(urls[1], '_blank')
+        clickCounts.qwen++
+        localStorage.setItem('Clics', JSON.stringify(clickCounts))
+        //localStorage.setItem('Clics-qwen', clickCounts.qwen)
+
     } else if (claudeBtn.contains(event.target)) {
-        window.open(urls[2], '_blank')
+        //window.open(urls[2], '_blank')
+        clickCounts.claude++
+        localStorage.setItem('Clics', JSON.stringify(clickCounts))
+        //localStorage.setItem('Clics-claude', clickCounts.claude)
+
+        //si no se ha hecho click en ninguno de los botones anteriores, mirar si se ha hecho click en el boton de "todos a la vez"
+    } else {
+        for (let i = 0; i < urls.length; i++)
+        window.open(urls[i], '_blank')
     }
 })
 
